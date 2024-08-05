@@ -1,0 +1,36 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "libs", "libs", "{C3A78DCC-A9CB-44CC-8E31-0C8E174E4F14}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Roblox.EphemeralCounters.Operations", "libs\ephemeral-counters-operations\src\Roblox.EphemeralCounters.Operations.csproj", "{9C0AAF3B-73BD-41F0-9420-478F66583D26}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "services", "services", "{81E422DB-7EC5-45CC-B5DA-90733E0C2F4D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Roblox.EphemeralCounters.Service", "services\ephemeral-counters-service\src\Roblox.EphemeralCounters.Service.csproj", "{CA1C1159-2EE8-4672-A20F-B2C310452E50}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{9C0AAF3B-73BD-41F0-9420-478F66583D26}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9C0AAF3B-73BD-41F0-9420-478F66583D26}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9C0AAF3B-73BD-41F0-9420-478F66583D26}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9C0AAF3B-73BD-41F0-9420-478F66583D26}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CA1C1159-2EE8-4672-A20F-B2C310452E50}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CA1C1159-2EE8-4672-A20F-B2C310452E50}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CA1C1159-2EE8-4672-A20F-B2C310452E50}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CA1C1159-2EE8-4672-A20F-B2C310452E50}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{9C0AAF3B-73BD-41F0-9420-478F66583D26} = {C3A78DCC-A9CB-44CC-8E31-0C8E174E4F14}
+		{CA1C1159-2EE8-4672-A20F-B2C310452E50} = {81E422DB-7EC5-45CC-B5DA-90733E0C2F4D}
+	EndGlobalSection
+EndGlobal
