@@ -25,6 +25,8 @@ public class Startup : HttpStartupBase
     {
         base.ConfigureServices(services);
 
+        System.Net.ServicePointManager.ServerCertificateValidationCallback = (sender, certificate, chain, sslPolicyErrors) => true;
+
         services.Configure<ApiBehaviorOptions>(options =>
         {
             options.SuppressModelStateInvalidFilter = true;
