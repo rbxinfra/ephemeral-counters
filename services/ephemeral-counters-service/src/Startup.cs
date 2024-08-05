@@ -24,9 +24,7 @@ public class Startup : HttpStartupBase
     public override void ConfigureServices(IServiceCollection services)
     {
         base.ConfigureServices(services);
-
-        System.Net.ServicePointManager.ServerCertificateValidationCallback = (sender, certificate, chain, sslPolicyErrors) => true;
-
+        
         services.Configure<ApiBehaviorOptions>(options =>
         {
             options.SuppressModelStateInvalidFilter = true;
