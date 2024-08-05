@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+	<PropertyGroup>
+		<Description>Service implementation for the Ephemeral Counters service.</Description>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Version>1.0.0</Version>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Roblox.ApplicationContext" Version="1.1.5" />
+		<PackageReference Include="Roblox.Web.Framework.Services.Http" Version="1.1.7" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\..\..\libs\ephemeral-counters-operations\src\Roblox.EphemeralCounters.Operations.csproj" />
+	</ItemGroup>
+
+
+</Project>

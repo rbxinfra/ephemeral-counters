@@ -1,0 +1,76 @@
+component: ephemeral-counters-service
+
+# This is only used by the build worklow,
+# it determines how the component is built
+# Docker only relevant when the argument
+# 
+build:
+  project_file: src/Roblox.EphemeralCounters.Service.csproj
+  component_directory: ./.deploy
+
+  additional_args:
+    - -p:DockerTag=${{ env.NOMAD_VERSION }}
+
+  docker:
+    docker_file: Dockerfile
+    image_name: docker.artifactory.rbx.com/analytics-platform/ephemeral-counters-service
+    
+deployment:
+  count: 3
+
+  job: ${{ env.NOMAD_ENVIRONMENT }}-roblox-ephemeral-counters-service
+
+  vault_policies:
+    - vault_secret_settings_providers_token_reader
+
+  # Passed to the meta section in Nomad
+  meta:
+    ENVIRONMENT: ${{ env.NOMAD_ENVIRONMENT }}
+
+  containers: # Maps to the groups section in Nomad
+    - image: docker.artifactory.rbx.com/analytics-platform/ephemeral-counters-service
+      resources:
+        cpu: ${{ env.NOMAD_CPU }}
+        ram: ${{ env.NOMAD_RAM }}
+      network:
+        ports:
+          http: 
+            to: 5000
+      services:
+        - name: ${{ env.NOMAD_ENVIRONMENT }}-roblox-ephemeral-counters-service-http
+          port: http
+          tags:
+            - ${{ env.NOMAD_ENVIRONMENT }}
+            - Roblox.EphemeralCounters.Service
+            - EphemeralCounters
+            - "traefik.enable=true"
+            - "traefik.http.routers.${{ env.NOMAD_ENVIRONMENT }}-roblox-ephemeral-counters-service-http.rule=(Host(`ephemeralcounters.api.sitetest4.robloxlabs.com`))"
+            - "traefik.http.routers.${{ env.NOMAD_ENVIRONMENT }}-roblox-ephemeral-counters-service-http.entrypoints=http"
+          checks:
+            - type: http
+              path: /health
+ 
+        - name: ${{ env.NOMAD_ENVIRONMENT }}-roblox-ephemeral-counters-service-https
+          port: http
+          tags:
+            - ${{ env.NOMAD_ENVIRONMENT }}
+            - Roblox.EphemeralCounters.Service
+            - EphemeralCounters
+            - "traefik.enable=true"
+            - "traefik.http.routers.${{ env.NOMAD_ENVIRONMENT }}-roblox-ephemeral-counters-service-https.rule=(Host(`ephemeralcounters.api.sitetest4.robloxlabs.com`))"
+            - "traefik.http.routers.${{ env.NOMAD_ENVIRONMENT }}-roblox-ephemeral-counters-service-https.entrypoints=https"
+            - "traefik.http.routers.${{ env.NOMAD_ENVIRONMENT }}-roblox-ephemeral-counters-service-https.tls=true"
+          checks:
+            - type: http
+              path: /health
+
+      config_maps:
+        - destination: secrets/file.env
+          env: true
+          on_change: restart
+          data: |
+            ASPNETCORE_URLS="http://+:5000"
+            AppName=Roblox.EphemeralCounters.EphemeralCountersService
+            DEFAULT_LOG_LEVEL=Information
+            VAULT_ADDR="http://vault.service.consul:8200"
+            VAULT_TOKEN="{{ with secret "secret/teams/applications/vault-providers" }}{{ .Data.vault_token }}{{ end }}"
