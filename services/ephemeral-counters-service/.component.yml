@@ -63,7 +63,9 @@ deployment:
           checks:
             - type: http
               path: /health
-
+              
+      volumes:
+        - "/etc/ssl/certs:/etc/ssl/certs:ro"
       config_maps:
         - destination: secrets/file.env
           env: true
