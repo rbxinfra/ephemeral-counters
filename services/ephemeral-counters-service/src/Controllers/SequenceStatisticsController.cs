@@ -10,7 +10,7 @@ using Platform.EphemeralCounters;
 /// <summary>
 /// Controller for accessing and modifying Api Clients.
 /// </summary>
-[Route("v1.1/[controller]")]
+[Route("v1.0/[controller]")]
 [ApiController]
 public class SequenceStatisticsController : Controller
 {
