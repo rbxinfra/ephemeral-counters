@@ -17,6 +17,7 @@ build:
     
 deployment:
   count: 3
+  namespace: api-web-services
 
   job: ${{ env.NOMAD_ENVIRONMENT }}-roblox-ephemeral-counters-service
 
