@@ -4,6 +4,8 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 
+using Prometheus;
+
 using Redis;
 using Platform.EphemeralCounters;
 
@@ -12,6 +14,17 @@ using Platform.EphemeralCounters;
 /// </summary>
 internal class Sequence : ISequence
 {
+    private static readonly Prometheus.Counter _TotalAdditionsCounter = Metrics.CreateCounter(
+        "ephemeral_statistics_additions_total",
+        "Total number of additions made to a specific sequence",
+        "sequence_name"
+    );
+    private static readonly Prometheus.Counter _TotalFlushesCounter = Metrics.CreateCounter(
+        "ephemeral_statistics_flushes_total",
+        "Total number of flushes made to a specific sequence",
+        "sequence_name"
+    );
+
     private readonly string _SequenceName;
     private readonly IRedisClientProvider _Provider;
 
@@ -31,7 +44,13 @@ internal class Sequence : ISequence
     }
 
     /// <inheritdoc cref="ISequence.Add(double)"/>
-    public void Add(double value) => _Provider.Client.Execute(_SequenceName, db => db.ListRightPush(_SequenceName, value));
+    public void Add(double value)
+    {
+        _TotalAdditionsCounter.WithLabels(_SequenceName).Inc();
+
+
+        _Provider.Client.Execute(_SequenceName, db => db.ListRightPush(_SequenceName, value));
+    }
 
     /// <inheritdoc cref="ISequence.AddInBackground(double, Action{Exception})"/>
     public void AddInBackground(double value, Action<Exception> exceptionHandler = null)
@@ -49,6 +68,8 @@ internal class Sequence : ISequence
 
     public ISequenceStatistics FlushStatistics()
     {
+        _TotalFlushesCounter.WithLabels(_SequenceName).Inc();
+
         var stats = GetStatistics();
 
         _Provider.Client.Execute(_SequenceName, db => db.KeyDelete(_SequenceName));

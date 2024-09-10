@@ -3,14 +3,38 @@ namespace Roblox.EphemeralCounters;
 using System;
 using System.Threading.Tasks;
 
+using Prometheus;
+
 using Redis;
-using Platform.EphemeralCounters;
+
+using ICounter = Platform.EphemeralCounters.ICounter;
 
 /// <summary>
 /// A counter.
 /// </summary>
 internal class Counter : ICounter
 {
+    private static readonly Prometheus.Counter _TotalDecrementCounter = Metrics.CreateCounter(
+        "ephemeral_counters_deccrement_total",
+        "The total number of deccrements to a specified counter",
+        "counter_name"
+    );
+    private static readonly Prometheus.Counter _TotalIncrementCounter = Metrics.CreateCounter(
+        "ephemeral_counters_increment_total",
+        "The total number of increments to a specified counter",
+        "counter_name"
+    );
+    private static readonly Prometheus.Counter _TotalDeletionsCounter = Metrics.CreateCounter(
+        "ephemeral_counters_deletions_total",
+        "The total number of deletions to a specified counter",
+        "counter_name"
+    );
+    private static readonly Prometheus.Counter _TotalFlushesCounter = Metrics.CreateCounter(
+        "ephemeral_counters_flushes_total",
+        "The total number of flushes to a specified counter",
+        "counter_name"
+    );
+
     private readonly string _CounterKey;
     private readonly IRedisClientProvider _Provider;
 
@@ -30,7 +54,12 @@ internal class Counter : ICounter
     }
 
     /// <inheritdoc cref="ICounter.Decrement(int)"/>
-    public void Decrement(int amount = 1) => _Provider.Client.Execute(_CounterKey, db => db.StringDecrement(_CounterKey, amount));
+    public void Decrement(int amount = 1)
+    {
+        _TotalDecrementCounter.WithLabels(_CounterKey).Inc();
+
+        _Provider.Client.Execute(_CounterKey, db => db.StringDecrement(_CounterKey, amount));
+    }
 
     /// <inheritdoc cref="ICounter.DecrementInBackground(int, Action{Exception})"/>
     public void DecrementInBackground(int value = 1, Action<Exception> exceptionHandler = null)
@@ -47,11 +76,18 @@ internal class Counter : ICounter
         });
 
     /// <inheritdoc cref="ICounter.Delete"/>
-    public void Delete() => _Provider.Client.Execute(_CounterKey, db => db.KeyDelete(_CounterKey));
+    public void Delete()
+    {
+        _TotalDeletionsCounter.WithLabels(_CounterKey).Inc();
+
+        _Provider.Client.Execute(_CounterKey, db => db.KeyDelete(_CounterKey));
+    }
 
     /// <inheritdoc cref="ICounter.FlushCount"/>
     public long FlushCount() 
     {
+        _TotalFlushesCounter.WithLabels(_CounterKey).Inc();
+
         var count = GetCount();
 
         Delete();
@@ -63,7 +99,12 @@ internal class Counter : ICounter
     public long GetCount() => (long)_Provider.Client.Execute(_CounterKey, db => db.StringGet(_CounterKey));
 
     /// <inheritdoc cref="ICounter.Increment(int)"/>
-    public void Increment(int amount = 1) => _Provider.Client.Execute(_CounterKey, db => db.StringIncrement(_CounterKey, amount));
+    public void Increment(int amount = 1)
+    {
+        _TotalIncrementCounter.WithLabels(_CounterKey).Inc();
+
+        _Provider.Client.Execute(_CounterKey, db => db.StringIncrement(_CounterKey, amount));
+    }
 
     /// <inheritdoc cref="ICounter.IncrementInBackground(int, Action{Exception})"/>
     public void IncrementInBackground(int value = 1, Action<Exception> exceptionHandler = null)
