@@ -11,6 +11,10 @@ using Roblox.EventLog;
 using Roblox.Configuration;
 using Roblox.ServiceDiscovery;
 using Roblox.Platform.EphemeralCounters;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
+
+using StartupBase = Roblox.Web.Framework.Services.StartupBase;
 
 /// <summary>
 /// Startup class for ephemeral-counters-service.
@@ -30,6 +34,7 @@ public class Startup : HttpStartupBase
             options.SuppressModelStateInvalidFilter = true;
             options.SuppressConsumesConstraintForFormFileParameters = true;
         });
+
 
         services.AddSingleton(provider =>
         {
@@ -71,6 +76,16 @@ public class Startup : HttpStartupBase
             return new EphemeralCounters.EphemeralCounterFactory(redisClientProviders.EphemeralCounters, redisClientProviders.EphemeralStatistics);
         });
         services.AddSingleton<EphemeralCounters.ISettings>(EphemeralCounters.Service.Settings.Singleton);
+
+        services.AddRequestDecompression();
+    }
+
+    /// <inheritdoc cref="StartupBase.Configure(IApplicationBuilder, IWebHostEnvironment)"/>
+    public override void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+    {
+        base.Configure(app, env);
+
+        app.UseRequestDecompression();
     }
 
     /// <inheritdoc cref="HttpStartupBase.ConfigureApiKeyParser(IServiceCollection)"/>
