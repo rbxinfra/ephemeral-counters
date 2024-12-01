@@ -20,6 +20,10 @@ internal class Settings : BaseSettingsProvider<Settings>, IServiceSettings, ISet
     /// <inheritdoc cref="ISettings.CommitInterval"/>
     public TimeSpan CommitInterval => GetOrDefault(nameof(CommitInterval), TimeSpan.FromSeconds(30));
 
+
+    /// <inheritdoc cref="IServiceSettings.VerboseErrorsEnabled"/>
+    public bool VerboseErrorsEnabled => GetOrDefault(nameof(VerboseErrorsEnabled), false);
+
     /// <summary>
     /// Gets the consul service name for the ephemeral statistics.
     /// </summary>
